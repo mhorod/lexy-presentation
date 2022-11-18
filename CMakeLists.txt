@@ -13,3 +13,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 # ipv4_address example
 add_executable(ipv4_address ipv4_address.cpp)
 target_link_libraries(ipv4_address PRIVATE foonathan::lexy)
+
+# calculator example
+add_executable(calculator calculator.cpp)
+target_link_libraries(calculator PRIVATE foonathan::lexy)
