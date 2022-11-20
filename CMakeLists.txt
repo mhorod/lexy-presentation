@@ -17,3 +17,7 @@ target_link_libraries(ipv4_address PRIVATE foonathan::lexy)
 # calculator example
 add_executable(calculator calculator.cpp)
 target_link_libraries(calculator PRIVATE foonathan::lexy)
+
+# mini_lambda example
+add_executable(mini_lambda mini_lambda.cpp)
+target_link_libraries(mini_lambda PRIVATE foonathan::lexy)
