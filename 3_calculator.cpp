@@ -1,4 +1,6 @@
 // Simple calculator
+// This example illustrates lexy support for operators and recursive rules.
+
 
 #include <iostream>
 #include <memory>
@@ -14,6 +16,7 @@
 #include <lexy_ext/shell.hpp>
 
 // definitions of data structures
+// our calculator will work with integers and five basic operations
 namespace ast
 {
     struct expr
@@ -84,17 +87,23 @@ namespace grammar
 {
     namespace dsl = lexy::dsl;
 
-    struct nested_expr : lexy::transparent_production
+    // Forward declare expr to allow recursing into it
+    struct expr;
+
+    struct nested_expr
     {
         // Changing whitespace from blank to space so shell doesn't stop on new line
         static constexpr auto whitespace = dsl::ascii::space;
-        static constexpr auto rule = dsl::recurse<struct expr>;
+        // Here we can't just use dsl::p<expr> because at this point expr is incomplete.
+        // Instead we use dsl::recurse which allows for incomplete types
+        static constexpr auto rule = dsl::recurse<expr>;
         static constexpr auto value = lexy::forward<ast::expr_ptr>;
     };
 
     // deriving from lexy default expression model
     struct expr : lexy::expression_production
     {
+        // We can define custom error messages for our grammar
         struct expected_operand
         {
             static constexpr auto name = "expected operand";
@@ -102,7 +111,6 @@ namespace grammar
 
         struct integer
         {
-            // Conditional and choice
             static constexpr auto rule = LEXY_LIT("0x") >> dsl::integer<int, dsl::hex> | dsl::integer<int>;
             static constexpr auto value = lexy::forward<int>;
         };
@@ -112,29 +120,38 @@ namespace grammar
             dsl::p<integer> |
             dsl::error<expected_operand>;
 
+        // exponentiation
+        // deriving from default operator that is right associative
         struct pow : dsl::infix_op_right
         {
             static constexpr auto op = dsl::op<ast::bin_op::pow>(LEXY_LIT("^"));
             using operand = dsl::atom;
         };
 
+        // multiplication and division
+        // deriving from default operator that is left associative
         struct mul : dsl::infix_op_left
         {
             static constexpr auto op = dsl::op<ast::bin_op::mul>(LEXY_LIT("*")) /
-                                       dsl::op<ast::bin_op::div>(LEXY_LIT("/"));
+                                       dsl::op<ast::bin_op::div>(LEXY_LIT("//"));
             using operand = pow;
         };
 
+        // addition and subtraction
+        // deriving from default operator that is left associative
         struct add : dsl::infix_op_left
         {
-            static constexpr auto op = dsl::op<ast::bin_op::mul>(LEXY_LIT("+")) /
-                                       dsl::op<ast::bin_op::div>(LEXY_LIT("-"));
+            static constexpr auto op = dsl::op<ast::bin_op::add>(LEXY_LIT("+")) /
+                                       dsl::op<ast::bin_op::sub>(LEXY_LIT("-"));
             using operand = mul;
         };
 
-        // operation with lowest priority that should be checked first
+        // Operation with lowest precedence
+        // other operations are parsed used operand members
         using operation = add;
 
+        // value can be defined by many callbacks
+        // lexy will select the one that is compatible with the type of the value
         static constexpr auto value =
             lexy::callback<ast::expr_ptr>(
                 // Subexpressions
@@ -166,6 +183,7 @@ int main()
     while (shell.is_open())
     {
         auto input = shell.prompt_for_input();
+
         auto parsed = lexy::parse<grammar::statement>(input, lexy_ext::report_error);
 
         if (parsed.has_value() && !parsed.value().empty())
