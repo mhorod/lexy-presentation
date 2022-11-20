@@ -16,8 +16,8 @@ add_executable(0_basic_api 0_basic_api.cpp)
 target_link_libraries(0_basic_api PRIVATE foonathan::lexy)
 
 # ipv4_address example
-add_executable(ipv4_address ipv4_address.cpp)
-target_link_libraries(ipv4_address PRIVATE foonathan::lexy)
+add_executable(1_ipv4_address 1_ipv4_address.cpp)
+target_link_libraries(1_ipv4_address PRIVATE foonathan::lexy)
 
 # calculator example
 add_executable(calculator calculator.cpp)
