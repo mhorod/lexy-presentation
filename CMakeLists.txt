@@ -30,3 +30,7 @@ target_link_libraries(3_calculator PRIVATE foonathan::lexy)
 # mini_lambda example
 add_executable(4_mini_lambda examples/4_mini_lambda.cpp)
 target_link_libraries(4_mini_lambda PRIVATE foonathan::lexy)
+
+# 5_simple_ethernet_frame example
+add_executable(5_simple_ethernet_frame examples/5_simple_ethernet_frame.cpp)
+target_link_libraries(5_simple_ethernet_frame PRIVATE foonathan::lexy)
