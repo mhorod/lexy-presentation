@@ -73,6 +73,7 @@ namespace ast
             case bin_op::pow:
                 return power(l, r);
             }
+            return 0;
         }
 
         int power(int base, int exponent)
