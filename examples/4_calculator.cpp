@@ -1,5 +1,6 @@
 // Simple calculator
 // This example illustrates lexy support for operators and recursive rules.
+// We also introduce lexy's built-in shell for interactive testing.
 
 
 #include <iostream>
@@ -12,6 +13,7 @@
 #include <lexy/dsl.hpp>
 #include <lexy/input/string_input.hpp>
 
+// Shell and error reporting
 #include <lexy_ext/report_error.hpp>
 #include <lexy_ext/shell.hpp>
 
